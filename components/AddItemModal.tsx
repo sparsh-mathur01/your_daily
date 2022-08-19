@@ -18,7 +18,7 @@ export default function AddItemModal({
 	setItems,
 }: {
 	showAddModal: boolean
-	setShowAddModal: any
+	setShowAddModal: React.Dispatch<React.SetStateAction<boolean>>
 	setItems: any
 }) {
 	const MyButton = styled(Button)(
@@ -35,7 +35,6 @@ export default function AddItemModal({
 		name: yup.string().required(),
 		price: yup.number().required(),
 		baseQuantity: yup.number().required(),
-		itemImageLinks: yup.number().required(),
 	})
 
 	return (
@@ -45,13 +44,14 @@ export default function AddItemModal({
 				initialValues={{
 					id: 0,
 					name: 'check',
-					categoryID: null,
+					categoryID: 1,
 					inStock: true,
 					price: 100,
-					baseQuantity: 90,
-					itemImageLinks: 30,
+					baseQuantity: 10,
+					itemImageLinks: undefined,
 				}}
 				onSubmit={(values) => {
+					console.log(values)
 					setShowAddModal(false)
 					addItemHandler(values, setItems, customizedSnackbar)
 				}}
@@ -59,7 +59,9 @@ export default function AddItemModal({
 				{({
 					values,
 					errors,
+					touched,
 					handleChange,
+					setFieldValue
 				}) => (
 					<Form>
 						<DialogContent>
@@ -74,8 +76,8 @@ export default function AddItemModal({
 								type='number'
 								value={values.categoryID}
 								onChange={handleChange}
-								error={!!errors.categoryID}
-								helperText={!!errors.categoryID && errors.categoryID}
+								error={!!errors.categoryID && !!touched.categoryID}
+								helperText={errors.categoryID && touched.categoryID && errors.categoryID}
 								fullWidth
 								variant='standard'
 							/>
@@ -87,12 +89,11 @@ export default function AddItemModal({
 								type='text'
 								value={values.name}
 								onChange={handleChange}
-								error={!!errors.name}
-								helperText={!!errors.name && errors.name}
+								error={!!errors.name && touched.name}
+								helperText={!!errors.name && touched.name && errors.name}
 								fullWidth
 								variant='standard'
 							/>
-
 							<TextField
 								autoFocus
 								margin='dense'
@@ -101,8 +102,8 @@ export default function AddItemModal({
 								type='number'
 								value={values.price}
 								onChange={handleChange}
-								error={!!errors.price}
-								helperText={!!errors.price && errors.price}
+								error={!!errors.price && touched.price}
+								helperText={!!errors.price && touched.price && errors.price}
 								fullWidth
 								variant='standard'
 							/>
@@ -126,24 +127,24 @@ export default function AddItemModal({
 								type='number'
 								value={values.baseQuantity}
 								onChange={handleChange}
-								error={!!errors.baseQuantity}
-								helperText={!!errors.baseQuantity && errors.baseQuantity}
+								error={!!errors.baseQuantity && touched.baseQuantity}
+								helperText={!!errors.baseQuantity && touched.baseQuantity && errors.baseQuantity}
 								fullWidth
 								variant='standard'
 							/>
+							
 							<TextField
-								autoFocus
-								margin='dense'
-								id='itemImageLinks'
-								label='Image'
-								type='number'
-								value={values.itemImageLinks}
-								onChange={handleChange}
-								error={!!errors.itemImageLinks}
-								helperText={!!errors.itemImageLinks && errors.itemImageLinks}
-								fullWidth
-								variant='standard'
-							/>
+									autoFocus
+									margin='dense'
+									id='itemImageLinks'
+									name='itemImageLinks'
+									type='file'
+									onChange={(event:) =>
+										setFieldValue('itemImageLinks', event.target.files[0])
+									}
+									helperText='Image'
+									variant='standard'
+								/>
 						</DialogContent>
 						<DialogActions>
 							<MyButton onClick={() => setShowAddModal(false)}>Cancel</MyButton>

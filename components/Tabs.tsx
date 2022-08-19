@@ -23,14 +23,13 @@ export default function FullWidthTabs({ items }: { items: itemType[] }) {
 	}))
 	return (
 		<Tabs
-			value={router.query.category}
+			value={router.query.category ?? "all"}
 			onChange={(e, newValue) => {
 				router.push({
 					query: {
 						category: newValue,
 					},
 				})
-				// customizedSnackbar('category changed successfully', 'success')
 			}}
 			indicatorColor='secondary'
 			textColor='secondary'

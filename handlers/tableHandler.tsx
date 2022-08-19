@@ -27,20 +27,19 @@ export const deleteHandler = async (id:number,setItems:any,customizedSnackbar:an
 		}
 }
 
-export const checkboxHandler = async (item:itemType,setItems:any,customizedSnackbar:any) => {
+export const checkboxHandler = async (itemData:itemType,setItemData:any,setItems:any,customizedSnackbar:any) => {
     const auth = localStorage.getItem('authToken')
-
     try {
         if (auth) {
             const res = await api.put(
-                `/api/store-manager/item/${item.id}`,
+                `/api/store-manager/item/${itemData.id}`,
                 {
-                    category: item.categoryID,
-                    imageId: item.itemImageLinks,
-                    inStock: !item.inStock,
-                    name: item.name,
-                    price: item.price,
-                    baseQuantity: item.baseQuantity,
+                    category: itemData.categoryID,
+                    imageId: itemData.itemImageLinks,
+                    inStock: !itemData.inStock,
+                    name: itemData.name,
+                    price: itemData.price,
+                    baseQuantity: itemData.baseQuantity,
                     strikeThroughPrice: 100,
                 },
                 {
@@ -48,9 +47,10 @@ export const checkboxHandler = async (item:itemType,setItems:any,customizedSnack
                         Authorization: auth,
                     },
                 }
-            )
-            setItems([])
-            customizedSnackbar("Item's inStock  updated successfully!", 'success')
+                )
+                setItemData({...itemData, inStock:!itemData.inStock})
+                // setItems([])
+            customizedSnackbar("Item's inStock updated successfully!", 'success')
         }
     } catch (error:any) {
         customizedSnackbar(error.message,'error')

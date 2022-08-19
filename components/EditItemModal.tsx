@@ -6,7 +6,7 @@ import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
-import { Checkbox, FormControlLabel, styled } from '@mui/material'
+import { Checkbox, FormControlLabel, Input, styled } from '@mui/material'
 import * as yup from 'yup'
 import { handleEdit } from '../handlers/editItemHandler'
 import snackbarContext from '../shared/provider/snackProvider'
@@ -23,14 +23,13 @@ interface itemType {
 }
 
 export default function EditItemModal({
-	setItems,
 	editModalState,
 	setEditModalState,
 }: {
-	setItems: any
 	editModalState: {
 		open: boolean
-		item: itemType
+		itemData: itemType
+		setItemData: any
 	}
 	setEditModalState: any
 }) {
@@ -48,32 +47,31 @@ export default function EditItemModal({
 		name: yup.string().required(),
 		price: yup.number().required(),
 		baseQuantity: yup.number().required(),
-		itemImageLinks: yup.number().required(),
 	})
 
 	return (
 		<div>
 			<Dialog
 				open={editModalState.open}
-				onClose={() => setEditModalState({ open: false, item: {} })}>
+				onClose={() => setEditModalState({ open: false, itemData: {} })}>
 				<DialogTitle>Edit Item Details</DialogTitle>
 
 				<Formik
 					initialValues={{
-						id: editModalState.item.id,
-						name: editModalState.item.name,
-						categoryID: editModalState.item.categoryID,
-						inStock: editModalState.item.inStock,
-						price: editModalState.item.price,
-						baseQuantity: editModalState.item.baseQuantity,
-						itemImageLinks: 20,
+						id: editModalState.itemData.id,
+						name: editModalState.itemData.name,
+						categoryID: editModalState.itemData.categoryID,
+						inStock: editModalState.itemData.inStock,
+						price: editModalState.itemData.price,
+						baseQuantity: editModalState.itemData.baseQuantity,
+						itemImageLinks: '',
 					}}
 					onSubmit={(values) => {
-						setEditModalState({ open: false, item: {} })
-						handleEdit(values, setItems, customizedSnackbar)
+						setEditModalState({ open: false, itemData: {} })
+						handleEdit(values, editModalState.setItemData, customizedSnackbar)
 					}}
 					validationSchema={validationSchema}>
-					{({ values, errors, handleChange }) => (
+					{({ values, errors, handleChange, setFieldValue }) => (
 						<Form>
 							<DialogContent>
 								<DialogContentText>
@@ -144,23 +142,25 @@ export default function EditItemModal({
 									fullWidth
 									variant='standard'
 								/>
+
 								<TextField
 									autoFocus
 									margin='dense'
 									id='itemImageLinks'
-									label='Image'
-									type='number'
-									value={values.itemImageLinks}
-									onChange={handleChange}
-									error={!!errors.itemImageLinks}
-									helperText={!!errors.itemImageLinks && errors.itemImageLinks}
-									fullWidth
+									name='itemImageLinks'
+									type='file'
+									onChange={(event) =>
+										setFieldValue('itemImageLinks', event.target.files[0])
+									}
+									helperText='Image'
 									variant='standard'
 								/>
 							</DialogContent>
 							<DialogActions>
 								<MyButton
-									onClick={() => setEditModalState({ open: false, item: {} })}>
+									onClick={() =>
+										setEditModalState({ open: false, itemData: {} })
+									}>
 									Cancel
 								</MyButton>
 								<MyButton type='submit'>Edit</MyButton>
@@ -171,83 +171,4 @@ export default function EditItemModal({
 			</Dialog>
 		</div>
 	)
-}
-
-{
-	/* <DialogContent>
-					<DialogContentText>
-						All details are mandatory to fill.
-					</DialogContentText>
-					<TextField
-						autoFocus
-						margin='dense'
-						id='category'
-						label='category'
-						type='number'
-						value={formState.categoryID}
-						onChange={onChangeHandler('categoryID',formState,setFormState)}
-						fullWidth
-						variant='standard'
-					/>
-					<TextField
-						autoFocus
-						margin='dense'
-						id='name'
-						label='Name'
-						type='text'
-						value={formState.name}
-						onChange={onChangeHandler('name',formState,setFormState)}
-						fullWidth
-						variant='standard'
-					/>
-					<TextField
-						autoFocus
-						margin='dense'
-						id='price'
-						label='Price(per base Qty)'
-						type='number'
-						value={formState.price}
-						onChange={onChangeHandler('price',formState,setFormState)}
-						fullWidth
-						variant='standard'
-					/>
-					<FormControlLabel
-						value='inStock'
-						control={
-							<Checkbox
-								onChange={onChangeHandler('inStock',formState,setFormState)}
-								checked={!!formState.inStock}
-							/>
-						}
-						label='In Stock'
-						labelPlacement='top'
-						sx={{ ml: 0, mt: 1 }}
-					/>
-					<TextField
-						autoFocus
-						margin='dense'
-						id='baseQty'
-						label='Base Qty'
-						type='number'
-						value={formState.baseQuantity}
-						onChange={onChangeHandler('baseQuantity',formState,setFormState)}
-						fullWidth
-						variant='standard'
-					/>
-					<TextField
-						autoFocus
-						margin='dense'
-						id='img'
-						label='Image'
-						type='number'
-						value={formState.itemImageLinks}
-						onChange={onChangeHandler('itemImageLinks',formState,setFormState)}
-						fullWidth
-						variant='standard'
-					/>
-				</DialogContent>
-				<DialogActions>
-					<MyButton onClick={()=>setEditModalState({ open: false, item: {} })}>Cancel</MyButton>
-					<MyButton onClick={()=>handleEdit(formState, setEditModalState, setItems,customizedSnackbar)}>Edit</MyButton>
-				</DialogActions> */
 }

@@ -1,3 +1,5 @@
+import { AlertColor } from '@mui/material'
+import { NextRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import api from '../pages/api'
 
@@ -11,7 +13,8 @@ interface itemType {
 	itemImageLinks: string[]
 }
 
-export const useItemsState = (customizedSnackbar:any) => {
+export const useItemsState = (customizedSnackbar:
+(message: string, severity: AlertColor) => void,router:NextRouter) => {
 	const [items, setItems] = useState([])
 	useEffect(() => {
 		const fetchData = async () => {
@@ -25,8 +28,12 @@ export const useItemsState = (customizedSnackbar:any) => {
 					})
 					setItems(data)
 				}
-			} catch (error) {
-				customizedSnackbar("please login to view data",'info')
+				else {
+					customizedSnackbar("please login to view data",'info')
+					router.push('/login')
+				}
+			} catch (error:any) {
+				console.log(error)
 			}
 		}
 		if (items.length == 0) fetchData()

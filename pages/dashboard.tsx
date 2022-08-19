@@ -19,6 +19,10 @@ import snackbarContext from '../shared/provider/snackProvider'
 
 
 export default function dashboard() {
+	const router = useRouter()
+	
+
+
 	const MyButton = styled(Button)({
 		textTransform: 'none',
 		fontSize: '15px',
@@ -29,9 +33,8 @@ export default function dashboard() {
 		},
 	})
 
-	const router = useRouter()
 	const { customizedSnackbar } = React.useContext(snackbarContext)
-	const { items, setItems } = useItemsState(customizedSnackbar)
+	const { items, setItems } = useItemsState(customizedSnackbar,router)
 	const [showAddModal, setShowAddModal] = useState(false)
 	return (
 		<>
@@ -43,7 +46,15 @@ export default function dashboard() {
 					direction='row'
 					position='static'
 					mb={3}>
-					<MyButton variant='outlined' onClick={() => router.push('/login')}>
+					<MyButton variant='outlined' onClick={() => {
+						if (localStorage.getItem('authToken')) router.push({
+							pathname:'/dashboard',
+							query:{
+								category:'all'
+							}
+						})
+						else router.push('/login')
+					}}>
 						Back
 					</MyButton>
 					<Typography variant='h2'>Items</Typography>

@@ -13,7 +13,7 @@ import EditItemModal from './EditItemModal'
 import snackbarContext from '../shared/provider/snackProvider'
 import { checkboxHandler, deleteHandler } from '../handlers/tableHandler'
 import { useRouter } from 'next/router'
-
+import { ShowItem } from './ShowItem'
 
 interface itemType {
 	id: number
@@ -34,7 +34,7 @@ export default function BasicTable({
 }) {
 	const [showEditModal, setShowEditModal] = useState({
 		open: false,
-		item: {
+		itemData: {
 			id: 0,
 			name: '',
 			categoryID: 0,
@@ -43,9 +43,10 @@ export default function BasicTable({
 			baseQuantity: 0,
 			itemImageLinks: [''],
 		},
+		setItemData:()=>{}
 	})
 	const router = useRouter()
-	const tabValue=router.query.category
+	const tabValue = router.query.category
 	const { customizedSnackbar } = React.useContext(snackbarContext)
 
 	const MyTableHeaders = styled(TableCell)({
@@ -59,7 +60,7 @@ export default function BasicTable({
 
 	return (
 		<>
-			<TableContainer sx={{ mt: 3 ,width:"100%"}}>
+			<TableContainer sx={{ mt: 3, width: '100%' }}>
 				<Table aria-label='simple table'>
 					<TableHead>
 						<TableRow>
@@ -78,51 +79,24 @@ export default function BasicTable({
 					<TableBody>
 						{items.map(
 							(item: itemType) =>
-								((tabValue=="all") || (tabValue == "others" && item.categoryID > 2) ||
-								(tabValue == "vegetables" && item.categoryID ==1) || (tabValue == "fruits" && item.categoryID == 2))&&(
-									<TableRow key={item.id}>
-										<MyTableCell align='center'>{item.id}</MyTableCell>
-										<MyTableCell align='center'>
-											<img
-												width='40px'
-												height='40px'
-												src={item.itemImageLinks[0]}></img>
-										</MyTableCell>
-										<MyTableCell align='center' component='th' scope='row'>
-											{item.name}
-										</MyTableCell>
-										<MyTableCell align='center'>
-											{item.baseQuantity}
-										</MyTableCell>
-										<MyTableCell align='center'>{item.price}</MyTableCell>
-										<MyTableCell align='center'>
-											<Checkbox
-												onClick={() => checkboxHandler(item, setItems,customizedSnackbar)}
-												key={item.id}
-												color='secondary'
-												checked={item.inStock}
-											/>
-										</MyTableCell>
-										<MyTableCell align='center'>
-											<IconButton
-												onClick={() => deleteHandler(item.id, setItems,customizedSnackbar)}>
-												<DeleteIcon color='secondary' />
-											</IconButton>
-										</MyTableCell>
-										<MyTableCell align='center'>
-											<IconButton
-												onClick={() => setShowEditModal({ open: true, item })}>
-												<EditIcon color='secondary' />
-											</IconButton>
-										</MyTableCell>
-									</TableRow>
+								(tabValue == 'all' ||
+									(tabValue == 'others' && item.categoryID > 2) ||
+									(tabValue == 'vegetables' && item.categoryID == 1) ||
+									(tabValue == 'fruits' && item.categoryID == 2)) && (
+									<ShowItem
+										key={item.id}
+										item={item}
+										setItems={setItems}
+										customizedSnackbar={customizedSnackbar}
+										showEditModal={showEditModal}
+										setShowEditModal={setShowEditModal}
+									/>
 								)
 						)}
 					</TableBody>
 				</Table>
 			</TableContainer>
 			<EditItemModal
-				setItems={setItems}
 				editModalState={showEditModal}
 				setEditModalState={setShowEditModal}
 			/>
