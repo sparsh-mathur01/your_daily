@@ -139,7 +139,7 @@ export default function AddItemModal({
 									id='itemImageLinks'
 									name='itemImageLinks'
 									type='file'
-									onChange={(event:) =>
+									onChange={(event) =>
 										setFieldValue('itemImageLinks', event.target.files[0])
 									}
 									helperText='Image'
